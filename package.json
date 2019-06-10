@@ -6,6 +6,8 @@
   "author": "azrap <azraap@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^3.0.6",
+    "brcypt": "^1.0.1",
     "express": "^4.17.1",
     "helmet": "^3.18.0",
     "knex": "^0.17.5",
