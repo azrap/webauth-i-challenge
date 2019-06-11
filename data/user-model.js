@@ -6,8 +6,6 @@ module.exports = {
     findUsers,
     findBy,
     addUser}
-
-
     function addUser(user){
         return db('LoginTable').insert(user)
     }

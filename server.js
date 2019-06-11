@@ -1,10 +1,31 @@
 const express = require('express');
 const server = express();
-server.use(express.json()); // built-in mw
+
 // server.use(logger);
 const bcrypt=require('bcrypt');
 const Users=require('./data/user-model.js');
 const restricted = require('./data/restricted.js')
+const session = require('express-session');
+const helmet = require('helmet')
+
+
+
+const sessionConfig={
+  name: 'monkey',
+  secret: 'keep it secret, keep it safe!',
+  cookie: {
+    maxAge: 1000*60*60*24,
+    secure: false, //true in production
+    httpOnly: true //cookie can't be
+  },
+  resave: false, // do we want to recreate session
+  saveUninitialized: false, // 
+}
+
+server.use(helmet())
+server.use(express.json()); // built-in mw
+server.use(session(sessionConfig))
+
 
 
 
@@ -15,10 +36,12 @@ server.get('/', (req, res) => {
 
   server.post('/api/register', async (req, res) => {
     try {
-        userInfo=req.body
-        console.log(userInfo.username)
+      console.log(req.body)
+        const userInfo= await req.body
+        
         userInfo.password = await bcrypt.hashSync(userInfo.password, 10)
         const user = await Users.addUser(userInfo)
+        
         res.status(201).json(user);
     }
 
@@ -40,9 +63,9 @@ server.get('/', (req, res) => {
     try {
         const user = await Users.findBy( { username })
         console.log(user);
-        console.log();
-
+        console.log(req.session);
         if (user && bcrypt.compareSync(password, user[0].password)){
+            req.session.user=user;
             res.status(200).json({message:`Welcome user!`});
 
         }
